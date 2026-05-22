@@ -162,8 +162,20 @@ class PluginBackupmanagerDashboard extends CommonGLPI {
         self::kpiCard(__('Active Routines', 'backupmanager'), $total_routines, 'ti ti-clock', 'primary', 'front/routine.php');
         self::kpiCard(__('Active Servers', 'backupmanager'), $total_servers, 'ti ti-server', 'info', 'front/server.php');
         self::kpiCard(__('Storage Buckets', 'backupmanager'), $total_dests, 'ti ti-device-floppy', 'secondary', 'front/destination.php');
-        self::kpiCard(__('Successes (7d)', 'backupmanager'), $success_7d, 'ti ti-check', 'success', 'front/log.php');
-        self::kpiCard(__('Failures (7d)', 'backupmanager'), $failed_7d, 'ti ti-x', 'danger', 'front/log.php');
+        $log_url_success = 'front/log.php'
+            . '?criteria[0][field]=2'
+            . '&criteria[0][searchtype]=equals'
+            . '&criteria[0][value]=success'
+            . '&reset=criteria';
+
+        $log_url_failed = 'front/log.php'
+            . '?criteria[0][field]=2'
+            . '&criteria[0][searchtype]=equals'
+            . '&criteria[0][value]=failed'
+            . '&reset=criteria';
+
+        self::kpiCard(__('Successes (7d)', 'backupmanager'), $success_7d, 'ti ti-check',  'success', $log_url_success);
+        self::kpiCard(__('Failures (7d)', 'backupmanager'),  $failed_7d,  'ti ti-x',      'danger',  $log_url_failed);
         self::kpiCard(__('Total Logs', 'backupmanager'), $total_logs, 'ti ti-list', 'secondary', 'front/log.php');
         echo "</div>";
 

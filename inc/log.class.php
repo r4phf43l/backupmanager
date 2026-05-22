@@ -214,14 +214,14 @@ class PluginBackupmanagerLog extends CommonDBTM {
         $tab = parent::rawSearchOptions();
 
         // 1 - Nome (link)
-        $tab[] = [
-            'id'            => 1,
-            'table'         => $this->getTable(),
-            'field'         => 'name',
-            'name'          => __('Name'),
-            'datatype'      => 'itemlink',
-            'massiveaction' => false,
-        ];
+        // $tab[] = [
+        //     'id'            => 1,
+        //     'table'         => $this->getTable(),
+        //     'field'         => 'name',
+        //     'name'          => __('Name'),
+        //     'datatype'      => 'itemlink',
+        //     'massiveaction' => false,
+        // ];
 
         // 2 - Status (badge via specific)
         $tab[] = [
@@ -303,9 +303,9 @@ class PluginBackupmanagerLog extends CommonDBTM {
             'datatype'      => 'dropdown',
             'massiveaction' => false,
             'joinparams'    => [
-                'jointype'  => '',
-                'linkfield' => 'plugin_backupmanager_routines_id',
+                'jointype'  => 'standard',
             ],
+            'linkfield'     => 'plugin_backupmanager_routines_id',
             'forcegroupby'  => true,
             'usehaving'     => true,
         ];
@@ -319,12 +319,12 @@ class PluginBackupmanagerLog extends CommonDBTM {
             'datatype'      => 'string',
             'massiveaction' => false,
             'joinparams'    => [
-                'jointype'  => '',
-                'linkfield' => 'plugin_backupmanager_servers_id',
+                'jointype'   => 'child',
+                'linkfield'  => 'id',
                 'beforejoin' => [
                     'table'      => 'glpi_plugin_backupmanager_routines',
                     'joinparams' => [
-                        'jointype'  => '',
+                        'jointype'  => 'child',
                         'linkfield' => 'plugin_backupmanager_routines_id',
                     ],
                 ],
@@ -366,18 +366,27 @@ class PluginBackupmanagerLog extends CommonDBTM {
 
     static function getSpecificValueToSelect($field, $name = '', $values = '', array $options = []) {
         if ($field === 'status') {
+            // GLPI pode passar $values como array ['status' => 'success'] ou como string 'success'
+            if (is_array($values)) {
+                $val = $values[$field] ?? $values[0] ?? '';
+            } else {
+                $val = (string)$values;
+            }
+
             $opts = [
                 self::STATUS_RUNNING => __('Running', 'backupmanager'),
                 self::STATUS_SUCCESS => __('Success', 'backupmanager'),
                 self::STATUS_FAILED  => __('Failed',  'backupmanager'),
                 self::STATUS_PARTIAL => __('Partial', 'backupmanager'),
             ];
+
             return Dropdown::showFromArray($name, $opts, [
-                'value'               => $values,
+                'value'               => $val,
                 'display_emptychoice' => true,
                 'display'             => false,
             ]);
         }
+
         return parent::getSpecificValueToSelect($field, $name, $values, $options);
     }
 
